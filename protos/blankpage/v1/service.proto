@@ -1,0 +1,170 @@
+syntax = 'proto3';
+
+package blankpage.v1;
+
+import "blankpage/v1/struct.proto";
+import "buf/validate/validate.proto";
+import "google/protobuf/field_mask.proto";
+
+message PurgeRequest {}
+
+message PurgeResponse {}
+
+message AddBookRequest {
+  Book book = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).cel = {
+      id: "AddBookRequest.book.metadata",
+      message: "book.metadata: value is required",
+      expression: "has(this.metadata)",
+    },
+    (buf.validate.field).cel = {
+      id: "AddBookRequest.book.metadata.title",
+      message: "book.metadata.title: value is required",
+      expression: "has(this.metadata.title)",
+    },
+    (buf.validate.field).cel = {
+      id: "AddBookRequest.book.content",
+      message: "book.content: value is required",
+      expression: "has(this.content)",
+    }
+  ];
+}
+
+message AddBookResponse {
+  Book book = 1;
+}
+
+message ReadBookRequest {
+  string book_id = 1 [(buf.validate.field).required = true];
+}
+
+message ReadBookResponse {
+  Metadata metadata = 1;
+}
+
+message UpdateBookRequest {
+  Book book = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).cel = {
+      id: "UpdateBookRequest.book.id",
+      message: "book.metadata.id: value is required",
+      expression: "has(this.metadata.id)",
+    }
+  ];
+  // FieldMask controls how the update is interpreted. If given, only the indicated fields will be updated, ala a PATCH
+  // style update. If not given, the entire book will be replaced, ala a PUT style update. This fieldmask should be
+  // relative to a Book object, not the request
+  google.protobuf.FieldMask field_mask = 2;
+}
+
+message UpdateBookResponse {}
+
+message RemoveBookRequest {
+  string book_id = 1 [(buf.validate.field).required = true];
+}
+
+message RemoveBookResponse {}
+
+message ListBooksRequest {
+  message PaginationOptions {
+    // PerPage is the number of entries to retrieve in a single request
+    optional uint32 per_page = 1;
+    // Page is the page number to retrieve
+    optional uint32 page = 2;
+  }
+  message SortOptions {
+    enum SortField {
+      SORT_FIELD_UNSPECIFIED = 0;
+      SORT_FIELD_UPLOAD_DATE = 1;
+      SORT_FIELD_TITLE = 2;
+    }
+    enum SortOrder {
+      SORT_ORDER_UNSPECIFIED = 0;
+      SORT_ORDER_ASCENDING = 1;
+      SORT_ORDER_DESCENDING = 2;
+    }
+
+    SortField sort_field = 1;
+    SortOrder sort_order = 2;
+  }
+
+  PaginationOptions pagination_options = 1;
+  SortOptions sort_options = 2;
+}
+
+message ListBooksResponse {
+  repeated Metadata books = 1;
+  uint32 total_books = 2;
+}
+
+message ExtractMetadataRequest {
+  bytes content = 1 [(buf.validate.field).required = true];
+}
+
+message ExtractMetadataResponse {
+  Metadata metadata = 1;
+}
+
+message CreateShelfRequest {
+  Shelf shelf = 1 [(buf.validate.field).required = true];
+}
+
+message CreateShelfResponse {
+  Shelf shelf = 1;
+}
+
+message ListShelvesRequest {}
+
+message ListShelvesResponse {
+  repeated Shelf shelves = 1;
+}
+
+message AddBooksToShelfRequest {
+  string shelf_id = 1 [(buf.validate.field).required = true];
+  repeated string book_ids = 2 [(buf.validate.field).required = true];
+}
+
+message AddBooksToShelfResponse {}
+
+message RemoveBooksFromShelfRequest {
+  string shelf_id = 1 [(buf.validate.field).required = true];
+  repeated string book_ids = 2 [(buf.validate.field).required = true];
+}
+
+message RemoveBooksFromShelfResponse {}
+
+message ListBooksForShelfRequest {
+  string shelf_id = 1 [(buf.validate.field).required = true];
+}
+
+message ListBooksForShelfResponse {
+  repeated Metadata books = 1;
+}
+
+service BlankPageService {
+  // Purge purges the service of all data. Mostly for functional testing. Must be explicitly enabled
+  rpc Purge(PurgeRequest) returns (PurgeResponse);
+  // AddBook uploads a new book to the service
+  rpc AddBook(AddBookRequest) returns (AddBookResponse);
+  // ReadBook gets the metadata for a single book
+  rpc ReadBook(ReadBookRequest) returns (ReadBookResponse);
+  // UpdateBook updates an existing book
+  rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
+  // RemoveBook removes a book from the server
+  rpc RemoveBook(RemoveBookRequest) returns (RemoveBookResponse);
+  // ListBooks gets metadata for all books (paginated) on the service
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+  // ExtractMetadata extract any embedded metadata from the provided book. Currently only supports epub
+  rpc ExtractMetadata(ExtractMetadataRequest) returns (ExtractMetadataResponse);
+  // CreateShelf creates a new shelf for organizing books
+  rpc CreateShelf(CreateShelfRequest) returns (CreateShelfResponse);
+  // ListShelves lists all configured shelves
+  rpc ListShelves(ListShelvesRequest) returns (ListShelvesResponse);
+  // AddBooksToShelf adds the given books to the shelf
+  rpc AddBooksToShelf(AddBooksToShelfRequest) returns (AddBooksToShelfResponse);
+  // RemoveBooksFromShelf reomves the given books from the shelf
+  rpc RemoveBooksFromShelf(RemoveBooksFromShelfRequest) returns (RemoveBooksFromShelfResponse);
+  // ListBooksForShelf gets all books on the given shelf
+  rpc ListBooksForShelf(ListBooksForShelfRequest) returns (ListBooksForShelfResponse);
+}

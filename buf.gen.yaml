@@ -1,0 +1,22 @@
+version: v2
+managed:
+  enabled: true
+  disable:
+  - file_option: go_package_prefix
+    module: buf.build/bufbuild/protovalidate
+  override:
+  - file_option: go_package_prefix
+    value: github.com/nicjohnson145/blankpage/gen/go
+plugins:
+- remote: buf.build/connectrpc/go:v1.18.1
+  out: gen/go
+  opt:
+  - paths=source_relative
+- remote: buf.build/protocolbuffers/go:v1.36.6
+  out: gen/go
+  opt:
+  - paths=source_relative
+- local: protoc-gen-python_betterproto2
+  out: gen/python/src/blankpage
+  opt: paths=source_relative
+  strategy: all

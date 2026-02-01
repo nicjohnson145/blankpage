@@ -1,0 +1,37 @@
+syntax = 'proto3';
+
+package blankpage.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+message Metadata {
+  // ID is the unique identifier for this book
+  string id = 1;
+  // Title is the title of the work
+  string title = 2;
+  // Author is the optional author of the work
+  optional string author = 3;
+  // Series is the optional overarching series the work is a part of
+  optional string series = 4;
+  // SeriesNumber is the optional number within the series 
+  optional float series_number = 5;
+  // Tags are the optional sorting tags applied to this work
+  repeated string tags = 6;
+  // Uploaded at is the time the work was uploaded. This field is automatically calculated by the server
+  google.protobuf.Timestamp uploaded_at = 7;
+}
+
+message Book {
+  // Metadata is user-facing metadata for this book
+  Metadata metadata = 1;
+  // Content is the raw content of the book
+  bytes content = 2;
+}
+
+message Shelf {
+  // ID is the unique identifier for this shelf
+  string id = 1;
+  // Name is the human readable name of the shelf
+  string name = 2 [(buf.validate.field).required = true];
+}

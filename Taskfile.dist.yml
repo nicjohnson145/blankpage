@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+  protos:
+    desc: generate protobuf shapes
+    cmds:
+    - uv run --with betterproto2_compiler==0.9.0 buf generate
+
+  server:
+    desc: run server locally
+    env:
+      LOG_LEVEL: debug
+      LOG_FORMAT: human
+      PURGE_ENABLED: T
+      INITIAL_ADMIN_PASSWORD: "fake-admin-password"
+    cmds:
+    - CGO_ENABLED=0 go build -o server ./cmd/server 
+    - ./server
+
+  cli:
+    desc: build cli
+    cmds:
+    - CGO_ENABLED=0 go build -o blankpage ./cmd/cli
+
+  functional-tests:
+    desc: run functional tests against a local instance
+    dir: ./functional-tests
+    env:
+      BLANKPAGE_URL: "http://localhost:8080"
+    cmds:
+    - uv run pytest -rF -v {{ .CLI_ARGS }}
+
+  seed-admin-roles:
+    desc: seed the admin user with all the roles for basic testing
+    cmds:
+    - uv run hack/admin_role_seed.py

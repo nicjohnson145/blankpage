@@ -1,0 +1,8 @@
+# ignore produced server binary
+/server
+# ignore produced cli binary
+/blankpage
+
+# ignore any python cache files from tests
+*.pyc
+__pycache__/
