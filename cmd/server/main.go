@@ -56,14 +56,14 @@ func run() error {
 		pbv1connect.BlankPageServiceName,
 	)
 
-	storer, storerCleanup, err := storage.NewFromEnv()
+	storer, storerCleanup, err := storage.NewFromEnv(logger)
 	defer storerCleanup()
 	if err != nil {
 		logger.Err(err).Msg("error creating storer")
 		return err
 	}
 
-	pstore, pstoreCleanup, err := pstorage.NewFromEnv()
+	pstore, pstoreCleanup, err := pstorage.NewFromEnv(logger)
 	defer pstoreCleanup()
 	if err != nil {
 		logger.Err(err).Msg("error creating pauth storage")

@@ -83,7 +83,7 @@ func NewService(conf ServiceConfig) *Service {
 		store:                conf.Store,
 		initialAdminEmail:    conf.InitialAdminEmail,
 		initialAdminPassword: conf.InitialAdminPassword,
-		initialAdminRoles:    conf.InitialAdminRoles,
+		initialAdminRoles:    adminRoles,
 		purgeEnabled:         conf.PurgeEnabled,
 		createUserRoles:      defaultSet(conf.CreateUserRoles),
 		readUserRoles:        defaultSet(conf.ReadUserRoles),
@@ -416,13 +416,13 @@ func (s *Service) ListUserRoles(ctx context.Context, req *connect.Request[pbv1be
 		return nil, s.logError(ctx, err, "error normalizing user id")
 	}
 
-	user, err := s.store.ReadUser(ctx, userID)
+	roles, err := s.store.ListUserRoles(ctx, userID)
 	if err != nil {
 		return nil, s.logError(ctx, err, "error reading user")
 	}
 
 	return connect.NewResponse(&pbv1beta1.ListUserRolesResponse{
-		Roles: user.Roles,
+		Roles: roles,
 	}), nil
 }
 

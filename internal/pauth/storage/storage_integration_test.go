@@ -2,13 +2,19 @@ package storage
 
 import (
 	"context"
+	"log"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	pauthv1beta1 "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1"
+	"github.com/nicjohnson145/blankpage/internal/svcconfig"
 	"github.com/nicjohnson145/hlp"
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
@@ -23,6 +29,56 @@ func nowClosure() (func() time.Time, func(time.Time)) {
 	}
 
 	return getFunc, setFunc
+}
+
+func TestPostgres(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("postgres integration tests are not quick")
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+
+	dbName := "blankpage"
+	dbUser := "blankpage_usr"
+	dbPassword := "some-password"
+
+	postgresContainer, err := postgres.Run(ctx,
+		"postgres:16-alpine",
+		postgres.WithDatabase(dbName),
+		postgres.WithUsername(dbUser),
+		postgres.WithPassword(dbPassword),
+		postgres.BasicWaitStrategies(),
+	)
+	t.Cleanup(func() {
+		if err := testcontainers.TerminateContainer(postgresContainer); err != nil {
+			log.Printf("failed to terminate container: %s", err)
+		}
+	})
+	require.NoError(t, err, "failed to start container")
+
+	t.Log(hlp.Must(postgresContainer.Inspect(ctx)).NetworkSettings.Ports)
+
+	t.Cleanup(func() {
+		viper.Reset()
+	})
+
+	portMap := hlp.Must(postgresContainer.Inspect(ctx)).NetworkSettings.Ports
+	pgPort := (portMap["5432/tcp"])[0].HostPort
+
+	viper.Set(svcconfig.PostgresDatabaseUser, dbUser)
+	viper.Set(svcconfig.PostgresDatabasePassword, dbPassword)
+	viper.Set(svcconfig.PostgresDatabaseHost, "localhost")
+	viper.Set(svcconfig.PostgresDatabaseName, dbName)
+	viper.Set(svcconfig.PostgresDatabasePort, pgPort)
+	viper.Set(svcconfig.PostgresDatabaseSSL, "disable")
+	viper.Set(svcconfig.StorageType, "postgres")
+
+	getTime, setTime := nowClosure()
+	store, cleanup, err := newFromEnvWithNow(zerolog.New(zerolog.NewTestWriter(t)), getTime)
+	t.Cleanup(cleanup)
+
+	integrationTest(t, store, setTime)
 }
 
 func TestMemory(t *testing.T) {

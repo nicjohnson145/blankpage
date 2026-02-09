@@ -35,10 +35,8 @@ type Metadata struct {
 	Series *string `protobuf:"bytes,4,opt,name=series,proto3,oneof" json:"series,omitempty"`
 	// SeriesNumber is the optional number within the series
 	SeriesNumber *float32 `protobuf:"fixed32,5,opt,name=series_number,json=seriesNumber,proto3,oneof" json:"series_number,omitempty"`
-	// Tags are the optional sorting tags applied to this work
-	Tags []string `protobuf:"bytes,6,rep,name=tags,proto3" json:"tags,omitempty"`
 	// Uploaded at is the time the work was uploaded. This field is automatically calculated by the server
-	UploadedAt    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=uploaded_at,json=uploadedAt,proto3" json:"uploaded_at,omitempty"`
+	UploadedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=uploaded_at,json=uploadedAt,proto3" json:"uploaded_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -106,13 +104,6 @@ func (x *Metadata) GetSeriesNumber() float32 {
 		return *x.SeriesNumber
 	}
 	return 0
-}
-
-func (x *Metadata) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
 }
 
 func (x *Metadata) GetUploadedAt() *timestamppb.Timestamp {
@@ -234,15 +225,14 @@ var File_blankpage_v1_struct_proto protoreflect.FileDescriptor
 
 const file_blankpage_v1_struct_proto_rawDesc = "" +
 	"\n" +
-	"\x19blankpage/v1/struct.proto\x12\fblankpage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x02\n" +
+	"\x19blankpage/v1/struct.proto\x12\fblankpage.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x01\n" +
 	"\bMetadata\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1b\n" +
 	"\x06author\x18\x03 \x01(\tH\x00R\x06author\x88\x01\x01\x12\x1b\n" +
 	"\x06series\x18\x04 \x01(\tH\x01R\x06series\x88\x01\x01\x12(\n" +
-	"\rseries_number\x18\x05 \x01(\x02H\x02R\fseriesNumber\x88\x01\x01\x12\x12\n" +
-	"\x04tags\x18\x06 \x03(\tR\x04tags\x12;\n" +
-	"\vuploaded_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\rseries_number\x18\x05 \x01(\x02H\x02R\fseriesNumber\x88\x01\x01\x12;\n" +
+	"\vuploaded_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"uploadedAtB\t\n" +
 	"\a_authorB\t\n" +
 	"\a_seriesB\x10\n" +

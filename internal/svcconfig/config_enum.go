@@ -14,12 +14,15 @@ import (
 const (
 	// StorageKindMemory is a StorageKind of type memory.
 	StorageKindMemory StorageKind = "memory"
+	// StorageKindPostgres is a StorageKind of type postgres.
+	StorageKindPostgres StorageKind = "postgres"
 )
 
 var ErrInvalidStorageKind = fmt.Errorf("not a valid StorageKind, try [%s]", strings.Join(_StorageKindNames, ", "))
 
 var _StorageKindNames = []string{
 	string(StorageKindMemory),
+	string(StorageKindPostgres),
 }
 
 // StorageKindNames returns a list of possible string values of StorageKind.
@@ -42,7 +45,8 @@ func (x StorageKind) IsValid() bool {
 }
 
 var _StorageKindValue = map[string]StorageKind{
-	"memory": StorageKindMemory,
+	"memory":   StorageKindMemory,
+	"postgres": StorageKindPostgres,
 }
 
 // ParseStorageKind attempts to convert a string to a StorageKind.

@@ -293,13 +293,8 @@ class Metadata(betterproto2.Message):
     SeriesNumber is the optional number within the series 
     """
 
-    tags: "list[str]" = betterproto2.field(6, betterproto2.TYPE_STRING, repeated=True)
-    """
-    Tags are the optional sorting tags applied to this work
-    """
-
     uploaded_at: "datetime.datetime | None" = betterproto2.field(
-        7, betterproto2.TYPE_MESSAGE, unwrap=lambda: __google__protobuf__.Timestamp, optional=True
+        6, betterproto2.TYPE_MESSAGE, unwrap=lambda: __google__protobuf__.Timestamp, optional=True
     )
     """
     Uploaded at is the time the work was uploaded. This field is automatically calculated by the server

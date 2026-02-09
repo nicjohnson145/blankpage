@@ -13,6 +13,7 @@ import (
 /*
 ENUM(
 memory
+postgres
 )
 */
 type StorageKind string
@@ -35,6 +36,14 @@ const (
 	// StorageType controls what kind of storage used for books/metadata/etc
 	StorageType = "storage.type"
 
+	// The Postgres* constants control the paramters used to connect to the database when the storage type is postgres
+	PostgresDatabaseUser     = "postgres.database_user"
+	PostgresDatabasePassword = "postgres.database_password"
+	PostgresDatabaseHost     = "postgres.database_host"
+	PostgresDatabasePort     = "postgres.database_port"
+	PostgresDatabaseName     = "postgres.database_name"
+	PostgresDatabaseSSL      = "postgres.database_ssl"
+
 	// PurgeEnabled controls if the purge endpoints of this service are enabled. Should only ever be enabled in a
 	// testing context
 	PurgeEnabled = "purge_enabled"
@@ -54,6 +63,9 @@ var (
 
 	DefaultStorageType = StorageKindMemory.String()
 
+	DefaultPostgresDatabasePort = 5432
+	DefaultPostgresDatabaseSSL = "disable"
+
 	DefaultPurgeEnabled = false
 
 	DefaultInitialAdminEmail    = "admin@example.com"
@@ -67,6 +79,9 @@ func InitConfig() {
 	viper.SetDefault(LogLevel, DefaultLogLevel)
 
 	viper.SetDefault(StorageType, DefaultStorageType)
+
+	viper.SetDefault(PostgresDatabasePort, DefaultPostgresDatabasePort)
+	viper.SetDefault(PostgresDatabaseSSL, DefaultPostgresDatabaseSSL)
 
 	viper.SetDefault(PurgeEnabled, DefaultPurgeEnabled)
 

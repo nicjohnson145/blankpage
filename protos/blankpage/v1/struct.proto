@@ -16,10 +16,8 @@ message Metadata {
   optional string series = 4;
   // SeriesNumber is the optional number within the series 
   optional float series_number = 5;
-  // Tags are the optional sorting tags applied to this work
-  repeated string tags = 6;
   // Uploaded at is the time the work was uploaded. This field is automatically calculated by the server
-  google.protobuf.Timestamp uploaded_at = 7;
+  google.protobuf.Timestamp uploaded_at = 6;
 }
 
 message Book {

@@ -13,6 +13,11 @@ tasks:
       LOG_FORMAT: human
       PURGE_ENABLED: T
       INITIAL_ADMIN_PASSWORD: "fake-admin-password"
+      STORAGE_TYPE: postgres
+      POSTGRES_DATABASE_USER: blankpage_usr
+      POSTGRES_DATABASE_PASSWORD: some-password
+      POSTGRES_DATABASE_HOST: localhost
+      POSTGRES_DATABASE_NAME: blankpage
     cmds:
     - CGO_ENABLED=0 go build -o server ./cmd/server 
     - ./server
@@ -34,3 +39,19 @@ tasks:
     desc: seed the admin user with all the roles for basic testing
     cmds:
     - uv run hack/admin_role_seed.py
+
+  migration:
+    desc: create a new migration
+    cmds:
+    - migrate create -ext sql -dir internal/storage/postgres-migrations {{ .CLI_ARGS }}
+    - migrate create -ext sql -dir internal/pauth/storage/postgres-migrations {{ .CLI_ARGS }}
+
+  postgres:
+    desc: start postgres container for bench testing with postgres storage backend
+    cmds:
+    - docker compose up -d --wait postgres
+
+  psql:
+    desc: connect to docker postgres for debugging
+    cmds:
+    - PGPASSWORD=some-password psql -h localhost -U blankpage_usr blankpage
