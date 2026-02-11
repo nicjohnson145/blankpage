@@ -64,6 +64,7 @@ func Root() *cobra.Command {
 	)
 
 	cmd.AddCommand(
+		Purge(),
 		AddBook(),
 	)
 

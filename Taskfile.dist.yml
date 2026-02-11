@@ -1,5 +1,12 @@
 version: '3'
 
+env:
+  BLANKPAGE_AUTHENTICATION_EMAIL: "admin@example.com"
+  BLANKPAGE_AUTHENTICATION_PASSWORD: "fake-admin-password"
+
+vars:
+  SERVICE_URL: http://localhost:8080
+
 tasks:
   protos:
     desc: generate protobuf shapes
@@ -55,3 +62,47 @@ tasks:
     desc: connect to docker postgres for debugging
     cmds:
     - PGPASSWORD=some-password psql -h localhost -U blankpage_usr blankpage
+
+  bootstrap:
+    desc: prepare a local service for bench testing
+    cmds:
+    - task: purge
+    - task: seed-admin-roles
+    - task: sample-books
+
+  purge:
+    desc: purge a local service
+    cmds:
+    - ./blankpage --server-url {{ .SERVICE_URL }} purge
+
+  sample-books:
+    desc: download some sample books from project gutenberg & seed them into the service
+    cmds:
+    - task: cli
+    # frankenstein
+    - task: fetch-book
+      vars:
+        BOOK: 84.epub3.images
+    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Frankenstein" --author "Mary Shelly" --no-interactive seed-books/84.epub3.images
+    # moby dick
+    - task: fetch-book
+      vars:
+        BOOK: 2701.epub3.images
+    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Moby Dick" --author "Herman Melville" --no-interactive seed-books/2701.epub3.images
+    # pride and prejudice
+    - task: fetch-book
+      vars:
+        BOOK: 1342.epub3.images
+    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Pride & Prejudice" --author "Jane Austen" --no-interactive seed-books/1342.epub3.images
+    # romeo & juliet
+    - task: fetch-book
+      vars:
+        BOOK: 1513.epub3.images
+    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Romeo & Juliet" --author "William Shakespeare" --no-interactive seed-books/1513.epub3.images
+
+  fetch-book:
+    internal: true
+    cmds:
+    - wget -O seed-books/{{ .BOOK }} https://www.gutenberg.org/ebooks/{{ .BOOK }}
+    status:
+    - test -f seed-books/{{ .BOOK }}
