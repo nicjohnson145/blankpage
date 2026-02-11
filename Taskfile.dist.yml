@@ -55,3 +55,12 @@ tasks:
     desc: connect to docker postgres for debugging
     cmds:
     - PGPASSWORD=some-password psql -h localhost -U blankpage_usr blankpage
+
+  sample-books:
+    desc: download some sample books from project gutenberg & seed them into the service
+    vars:
+      SERVICE_URL: http://localhost:8080
+    cmds:
+    - task: cli
+    - wget -q https://www.gutenberg.org/ebooks/84.epub3.images
+    - defer: rm 84.epub3.images

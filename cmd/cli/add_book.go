@@ -19,6 +19,19 @@ import (
 )
 
 func AddBook() *cobra.Command {
+	const (
+		flagTitle     = "title"
+		flagAuthor    = "author"
+		flagSeries    = "series"
+		flagSeriesNum = "series-num"
+	)
+	var (
+		overrideTitle        string
+		overrideAuthor       string
+		overrideSeries       string
+		overrideSeriesNumber float32
+	)
+
 	cmd := &cobra.Command{
 		Use:   "add-book <BOOK>",
 		Args:  cobra.ExactArgs(1),
@@ -141,6 +154,11 @@ func AddBook() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVar(&overrideTitle, flagTitle, "", "Force the title of the book")
+	cmd.Flags().StringVar(&overrideAuthor, flagAuthor, "", "Force the author of the book")
+	cmd.Flags().StringVar(&overrideSeries, flagSeries, "", "Force the series of the book")
+	cmd.Flags().Float32Var(&overrideSeriesNumber, flagSeriesNum, 0, "Force the series number of the book")
 
 	return cmd
 }
