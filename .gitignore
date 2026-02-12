@@ -6,3 +6,6 @@
 # ignore any python cache files from tests
 *.pyc
 __pycache__/
+
+# ignore the local gutenberg cache directory
+/seed-books/
