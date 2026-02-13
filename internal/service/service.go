@@ -189,14 +189,14 @@ func (s *Service) ListBooks(ctx context.Context, req *connect.Request[pbv1.ListB
 	s.normalizeListRequest(req.Msg)
 
 	// Get our list
-	metadataList, totalCount, err := s.storer.ListMetadata(ctx, req.Msg)
+	storeResp, err := s.storer.ListMetadata(ctx, req.Msg)
 	if err != nil {
 		return nil, s.logError(ctx, err, "error listing")
 	}
 
 	return connect.NewResponse(&pbv1.ListBooksResponse{
-		Books:      metadataList,
-		TotalBooks: totalCount,
+		Books:   storeResp.Books,
+		HasMore: storeResp.HasMore,
 	}), nil
 }
 

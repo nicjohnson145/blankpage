@@ -76,7 +76,7 @@ func (m *Memory) RemoveBook(ctx context.Context, req *pbv1.RemoveBookRequest) er
 	return nil
 }
 
-func (m *Memory) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) ([]*pbv1.Metadata, uint32, error) {
+func (m *Memory) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (*ListMetadataResponse, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -97,7 +97,7 @@ func (m *Memory) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (
 			return strings.Compare(a.Metadata.Title, b.Metadata.Title)
 		}
 	default:
-		return nil, 0, fmt.Errorf("unhandled sort field %v", req.SortOptions.SortField)
+		return nil, fmt.Errorf("unhandled sort field %v", req.SortOptions.SortField)
 	}
 
 	var finalSortFunc sortFunc
@@ -118,7 +118,7 @@ func (m *Memory) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (
 
 	// If we're asking for a page that doesnt exist, just return nothing
 	if int(lower) > len(books) {
-		return []*pbv1.Metadata{}, 0, nil
+		return &ListMetadataResponse{}, nil
 	}
 
 	// Otherwise, for every item in books starting at the lower and going to the upper, copy it out
@@ -127,7 +127,10 @@ func (m *Memory) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (
 		outBooks = append(outBooks, proto.Clone(books[idx].Metadata).(*pbv1.Metadata))
 	}
 
-	return outBooks, uint32(len(books)), nil
+	return &ListMetadataResponse{
+		Books:   outBooks,
+		HasMore: upper < len(books),
+	}, nil
 }
 
 func (m *Memory) GetAllSeries(ctx context.Context) ([]string, error) {

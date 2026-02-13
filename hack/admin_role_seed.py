@@ -5,6 +5,7 @@
 # ]
 # ///
 import requests
+import os
 
 
 def must_ok(resp):
@@ -29,8 +30,8 @@ def main():
         requests.post(
             f"{pauth}/Login",
             json={
-                "email": "admin@example.com",
-                "password": "fake-admin-password",
+                "email": os.environ.get("BLANKPAGE_AUTHENTICATION_EMAIL", "admin@example.com"),
+                "password": os.environ.get("BLANKPAGE_AUTHENTICATION_PASSWORD", "fake-admin-password"),
             },
         )
     ).json()

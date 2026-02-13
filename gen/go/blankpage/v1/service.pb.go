@@ -596,6 +596,7 @@ type ListBooksResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Books         []*Metadata            `protobuf:"bytes,1,rep,name=books,proto3" json:"books,omitempty"`
 	TotalBooks    uint32                 `protobuf:"varint,2,opt,name=total_books,json=totalBooks,proto3" json:"total_books,omitempty"`
+	HasMore       bool                   `protobuf:"varint,3,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -642,6 +643,13 @@ func (x *ListBooksResponse) GetTotalBooks() uint32 {
 		return x.TotalBooks
 	}
 	return 0
+}
+
+func (x *ListBooksResponse) GetHasMore() bool {
+	if x != nil {
+		return x.HasMore
+	}
+	return false
 }
 
 type ExtractMetadataRequest struct {
@@ -1317,11 +1325,12 @@ const file_blankpage_v1_service_proto_rawDesc = "" +
 	"\tSortOrder\x12\x1a\n" +
 	"\x16SORT_ORDER_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14SORT_ORDER_ASCENDING\x10\x01\x12\x19\n" +
-	"\x15SORT_ORDER_DESCENDING\x10\x02\"b\n" +
+	"\x15SORT_ORDER_DESCENDING\x10\x02\"}\n" +
 	"\x11ListBooksResponse\x12,\n" +
 	"\x05books\x18\x01 \x03(\v2\x16.blankpage.v1.MetadataR\x05books\x12\x1f\n" +
 	"\vtotal_books\x18\x02 \x01(\rR\n" +
-	"totalBooks\":\n" +
+	"totalBooks\x12\x19\n" +
+	"\bhas_more\x18\x03 \x01(\bR\ahasMore\":\n" +
 	"\x16ExtractMetadataRequest\x12 \n" +
 	"\acontent\x18\x01 \x01(\fB\x06\xbaH\x03\xc8\x01\x01R\acontent\"M\n" +
 	"\x17ExtractMetadataResponse\x122\n" +

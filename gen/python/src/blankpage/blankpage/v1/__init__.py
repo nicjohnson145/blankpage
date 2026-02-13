@@ -246,6 +246,8 @@ class ListBooksResponse(betterproto2.Message):
 
     total_books: "int" = betterproto2.field(2, betterproto2.TYPE_UINT32)
 
+    has_more: "bool" = betterproto2.field(3, betterproto2.TYPE_BOOL)
+
 
 default_message_pool.register_message("blankpage.v1", "ListBooksResponse", ListBooksResponse)
 

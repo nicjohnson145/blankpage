@@ -20,3 +20,6 @@ plugins:
   out: gen/python/src/blankpage
   opt: paths=source_relative
   strategy: all
+- remote: buf.build/bufbuild/es:v2.11.0
+  out: ui/src/gen
+  include_imports: true

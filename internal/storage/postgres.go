@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math"
+
 	"github.com/lib/pq"
 
 	sq "github.com/Masterminds/squirrel"
@@ -172,13 +174,8 @@ func (p *Postgres) RemoveBook(ctx context.Context, req *pbv1.RemoveBookRequest) 
 	return nil
 }
 
-func (p *Postgres) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) ([]*pbv1.Metadata, uint32, error) {
-	type returnVal struct {
-		Metadata   []*pbv1.Metadata
-		TotalCount uint32
-	}
-
-	val, err := hsqlx.WithTransactionReturning(p.db, func(txn *sqlx.Tx) (*returnVal, error) {
+func (p *Postgres) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (*ListMetadataResponse, error) {
+	return hsqlx.WithTransactionReturning(p.db, func(txn *sqlx.Tx) (*ListMetadataResponse, error) {
 		psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
 		query := psql.Select("*").From("blankpage_book_metadata")
@@ -237,18 +234,14 @@ func (p *Postgres) ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest)
 			return nil, fmt.Errorf("error selecting row count: %w", err)
 		}
 
-		return &returnVal{
-			Metadata:   outRows,
-			TotalCount: uint32(countRows[0].Count),
+		lower := int(*req.PaginationOptions.Page * *req.PaginationOptions.PerPage)
+		upper := int(math.Min(float64(lower+int(*req.PaginationOptions.PerPage)), float64(countRows[0].Count)))
+
+		return &ListMetadataResponse{
+			Books:   outRows,
+			HasMore: upper < countRows[0].Count,
 		}, nil
-
 	})
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return val.Metadata, val.TotalCount, nil
-
 }
 
 func (p *Postgres) GetAllSeries(ctx context.Context) ([]string, error) {

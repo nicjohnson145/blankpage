@@ -11,7 +11,7 @@ from betterproto2 import unwrap
 
 class Base(TestCase):
     ADMIN_EMAIL = "admin@example.com"
-    ADMIN_PASSWORD = "fake-admin-password"
+    ADMIN_PASSWORD = "fake"
 
     GRANT_ADMIN_ALL = True
 

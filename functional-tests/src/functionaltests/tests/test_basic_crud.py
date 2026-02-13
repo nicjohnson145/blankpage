@@ -215,9 +215,9 @@ class TestBasicCrud(util.Base):
             response_shape=blankpagev1.ListBooksResponse,
         )
 
-        # make sure we got back 2, but total shows 3
+        # make sure we got back 2, but shows more available
         compare(actual=[m.title for m in resp.books], expected=["Book Three", "Book Two"])
-        compare(actual=resp.total_books, expected=3)
+        compare(actual=resp.has_more, expected=True)
 
     def test_remove_book(self):
         admin_token = self.login()

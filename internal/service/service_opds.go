@@ -156,7 +156,7 @@ func (s *Service) opdsFilterSeries(req *http.Request) (*Feed, error) {
 }
 
 func (s *Service) opdsFilterRecentlyAdded(req *http.Request) (*Feed, error) {
-	entries, _, err := s.storer.ListMetadata(req.Context(), &pbv1.ListBooksRequest{
+	storeResp, err := s.storer.ListMetadata(req.Context(), &pbv1.ListBooksRequest{
 		PaginationOptions: &pbv1.ListBooksRequest_PaginationOptions{
 			PerPage: hlp.Ptr(uint32(25)),
 			Page:    hlp.Ptr(uint32(0)),
@@ -193,7 +193,7 @@ func (s *Service) opdsFilterRecentlyAdded(req *http.Request) (*Feed, error) {
 				Type: NavigationLinkKind,
 			},
 		},
-		Entries: hlp.Map(entries, func(meta *pbv1.Metadata, _ int) FeedEntry {
+		Entries: hlp.Map(storeResp.Books, func(meta *pbv1.Metadata, _ int) FeedEntry {
 			return metadataToFeedEntry(meta)
 		}),
 	}, nil
@@ -211,7 +211,7 @@ func (s *Service) opdsFilterAlphabetical(req *http.Request) (*Feed, error) {
 		page = uint32(pageVal)
 	}
 
-	entries, totalCount, err := s.storer.ListMetadata(req.Context(), &pbv1.ListBooksRequest{
+	storeResp, err := s.storer.ListMetadata(req.Context(), &pbv1.ListBooksRequest{
 		PaginationOptions: &pbv1.ListBooksRequest_PaginationOptions{
 			PerPage: hlp.Ptr(pageSize),
 			Page:    hlp.Ptr(page),
@@ -242,8 +242,7 @@ func (s *Service) opdsFilterAlphabetical(req *http.Request) (*Feed, error) {
 			Type: NavigationLinkKind,
 		},
 	}
-	topCount := int(page)*int(pageSize) + len(entries)
-	if topCount < int(totalCount) {
+	if storeResp.HasMore {
 		links = append(links, FeedLink{
 			Rel:  "next",
 			Href: routeFilterAllAlphabetical() + "?page=" + fmt.Sprint(page+1),
@@ -265,7 +264,7 @@ func (s *Service) opdsFilterAlphabetical(req *http.Request) (*Feed, error) {
 		// TODO: this should reflect data update time
 		Updated: s.nowFunc(),
 		Links:   links,
-		Entries: hlp.Map(entries, func(meta *pbv1.Metadata, _ int) FeedEntry {
+		Entries: hlp.Map(storeResp.Books, func(meta *pbv1.Metadata, _ int) FeedEntry {
 			return metadataToFeedEntry(meta)
 		}),
 	}, nil

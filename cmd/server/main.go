@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"embed"
 	"errors"
+	"io/fs"
 	"net"
 	"net/http"
 	"os"
@@ -30,6 +32,9 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+//go:embed dist
+var uiDistFS embed.FS
 
 func main() {
 	if err := run(); err != nil {
@@ -83,7 +88,13 @@ func run() error {
 		Store:                pstore,
 		InitialAdminEmail:    adminEmail,
 		InitialAdminPassword: adminPassword,
-		InitialAdminRoles:    []string{pauth.RoleAdministrator},
+		InitialAdminRoles: []string{
+			service.RoleAdmin,
+			service.RoleBookUploader,
+			service.RoleBookUpdater,
+			service.RoleShelfAdmin,
+			service.RoleViewOnly,
+		},
 	})
 
 	// Call our bootstrap function on startup, in case its the first one
@@ -108,6 +119,13 @@ func run() error {
 	})
 	if err != nil {
 		logger.Err(err).Msg("error creating auth connect interceptor")
+		return err
+	}
+
+	// build our UI FS
+	uiFS, err := fs.Sub(uiDistFS, "dist")
+	if err != nil {
+		logger.Err(err).Msg("error building subFS")
 		return err
 	}
 
@@ -165,6 +183,9 @@ func run() error {
 	// Reflection routing
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
+
+	// UI routing
+	mux.Handle("/", http.FileServerFS(uiFS))
 
 	port := viper.GetString(svcconfig.Port)
 	lis, err := net.Listen("tcp4", ":"+port)

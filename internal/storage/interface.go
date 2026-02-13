@@ -33,12 +33,17 @@ var (
 	ErrNotFoundError     = errors.New("not found")
 )
 
+type ListMetadataResponse struct {
+	Books   []*pbv1.Metadata
+	HasMore bool
+}
+
 type Storer interface {
 	Purge(ctx context.Context) error
 	AddBook(ctx context.Context, req *pbv1.AddBookRequest) error
 	ReadBook(ctx context.Context, id string) (*pbv1.Book, error)
 	RemoveBook(ctx context.Context, req *pbv1.RemoveBookRequest) error
-	ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) ([]*pbv1.Metadata, uint32, error)
+	ListMetadata(ctx context.Context, req *pbv1.ListBooksRequest) (*ListMetadataResponse, error)
 	GetAllSeries(ctx context.Context) ([]string, error)
 	GetBooksBySeries(ctx context.Context, series string) ([]*pbv1.Metadata, error)
 	CreateShelf(ctx context.Context, shelf *pbv1.Shelf) error

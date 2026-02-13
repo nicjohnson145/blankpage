@@ -96,6 +96,7 @@ message ListBooksRequest {
 message ListBooksResponse {
   repeated Metadata books = 1;
   uint32 total_books = 2;
+  bool has_more = 3;
 }
 
 message ExtractMetadataRequest {

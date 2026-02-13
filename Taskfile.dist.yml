@@ -1,11 +1,14 @@
 version: '3'
 
-env:
-  BLANKPAGE_AUTHENTICATION_EMAIL: "admin@example.com"
-  BLANKPAGE_AUTHENTICATION_PASSWORD: "fake-admin-password"
-
 vars:
   SERVICE_URL: http://localhost:8080
+  ADMIN_EMAIL: "admin@example.com"
+  ADMIN_PASS: "fake"
+
+env:
+  BLANKPAGE_AUTHENTICATION_EMAIL: "{{ .ADMIN_EMAIL }}"
+  BLANKPAGE_AUTHENTICATION_PASSWORD: "{{ .ADMIN_PASS }}"
+
 
 tasks:
   protos:
@@ -19,13 +22,15 @@ tasks:
       LOG_LEVEL: debug
       LOG_FORMAT: human
       PURGE_ENABLED: T
-      INITIAL_ADMIN_PASSWORD: "fake-admin-password"
+      INITIAL_ADMIN_PASSWORD: '{{ .ADMIN_PASS }}'
       STORAGE_TYPE: postgres
       POSTGRES_DATABASE_USER: blankpage_usr
       POSTGRES_DATABASE_PASSWORD: some-password
       POSTGRES_DATABASE_HOST: localhost
       POSTGRES_DATABASE_NAME: blankpage
     cmds:
+    - mkdir -p ./cmd/server/dist
+    - echo "<p>This is a debug server build</p>" > ./cmd/server/dist/index.html
     - CGO_ENABLED=0 go build -o server ./cmd/server 
     - ./server
 
@@ -66,8 +71,10 @@ tasks:
   bootstrap:
     desc: prepare a local service for bench testing
     cmds:
+    - task: cli
     - task: purge
     - task: seed-admin-roles
+    - mkdir -p seed-books
     - task: sample-books
 
   purge:
@@ -78,27 +85,50 @@ tasks:
   sample-books:
     desc: download some sample books from project gutenberg & seed them into the service
     cmds:
-    - task: cli
-    # frankenstein
-    - task: fetch-book
+    - task: fetch-and-upload
       vars:
         BOOK: 84.epub3.images
-    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Frankenstein" --author "Mary Shelly" --no-interactive seed-books/84.epub3.images
-    # moby dick
-    - task: fetch-book
+        TITLE: Frankenstein
+        AUTHOR: Mary Shelly
+    - task: fetch-and-upload
       vars:
         BOOK: 2701.epub3.images
-    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Moby Dick" --author "Herman Melville" --no-interactive seed-books/2701.epub3.images
-    # pride and prejudice
-    - task: fetch-book
+        TITLE: Moby Dick
+        AUTHOR: Herman Melville
+    - task: fetch-and-upload
       vars:
         BOOK: 1342.epub3.images
-    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Pride & Prejudice" --author "Jane Austen" --no-interactive seed-books/1342.epub3.images
-    # romeo & juliet
-    - task: fetch-book
+        TITLE: Pride & Prejudice
+        AUTHOR: Jane Austen
+    - task: fetch-and-upload
       vars:
         BOOK: 1513.epub3.images
-    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "Romeo & Juliet" --author "William Shakespeare" --no-interactive seed-books/1513.epub3.images
+        TITLE: Romeo & Juliet
+        AUTHOR: William Shakespeare
+    - task: fetch-and-upload
+      vars:
+        BOOK: 64317.epub3.images
+        TITLE: The Great Gatsby
+        AUTHOR: F. Scott Fitzgerald
+    - task: fetch-and-upload
+      vars:
+        BOOK: 1661.epub3.images
+        TITLE: The Adventures of Sherlock Holmes
+        AUTHOR: Arthur Conan Doyle
+    - task: fetch-and-upload
+      vars:
+        BOOK: 120.epub3.images
+        TITLE: Treasure Island
+        AUTHOR: Robert Louis Stevenson
+
+  fetch-and-upload:
+    internal: true
+    cmds:
+    - task: fetch-book
+      vars:
+        BOOK: '{{ .BOOK }}'
+    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "{{ .TITLE }}" --author "{{ .AUTHOR }}" --no-interactive seed-books/{{ .BOOK }}
+
 
   fetch-book:
     internal: true
@@ -106,3 +136,19 @@ tasks:
     - wget -O seed-books/{{ .BOOK }} https://www.gutenberg.org/ebooks/{{ .BOOK }}
     status:
     - test -f seed-books/{{ .BOOK }}
+
+  production-server:
+    desc: build a production server binary with the UI bundled in
+    cmds:
+    - task: production-ui
+    - rm -rf ./cmd/server/dist
+    - mkdir -p ./cmd/server/dist
+    - cp -r ./ui/dist/* ./cmd/server/dist/.
+    - CGO_ENABLED=0 go build -o server ./cmd/server 
+
+  production-ui:
+    internal: true
+    dir: ./ui
+    cmds:
+    - bun run build
+
