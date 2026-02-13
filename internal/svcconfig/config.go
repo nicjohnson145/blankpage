@@ -64,7 +64,7 @@ var (
 	DefaultStorageType = StorageKindMemory.String()
 
 	DefaultPostgresDatabasePort = 5432
-	DefaultPostgresDatabaseSSL = "disable"
+	DefaultPostgresDatabaseSSL  = "disable"
 
 	DefaultPurgeEnabled = false
 

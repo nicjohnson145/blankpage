@@ -86,7 +86,7 @@ func PBAddShelfBooksRequestToDBShelfMembers(req *pbv1.AddBooksToShelfRequest) []
 	return hlp.Map(req.BookIds, func(id string, _ int) DBShelfMember {
 		return DBShelfMember{
 			ShelfID: req.ShelfId,
-			BookID: id,
+			BookID:  id,
 		}
 	})
 }
