@@ -458,7 +458,7 @@ func (s *Service) IsKeyActive(ctx context.Context, req *connect.Request[pbv1beta
 			if errors.Is(err, storage.ErrSessionUnknownOrInactiveError) {
 				return false
 			}
-			s.logError(ctx, err, "error checking session validity")
+			_ = s.logError(ctx, err, "error checking session validity")
 			return false
 		}
 		return true

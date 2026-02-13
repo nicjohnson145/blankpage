@@ -77,6 +77,7 @@ func TestPostgres(t *testing.T) {
 	getTime, setTime := nowClosure()
 	store, cleanup, err := newFromEnvWithNow(zerolog.New(zerolog.NewTestWriter(t)), getTime)
 	t.Cleanup(cleanup)
+	require.NoError(t, err)
 
 	integrationTest(t, store, setTime)
 }
