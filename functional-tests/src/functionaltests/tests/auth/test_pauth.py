@@ -418,3 +418,24 @@ class TestPauth(util.Base):
             response_shape=pauthv1beta1.ListUserRolesResponse,
         )
         compare(actual=role_resp.roles, expected=["admin"])
+
+    def test_is_active_key(self):
+        # active keys should return true
+        resp = util.execute_http(
+            util.pauth_v1beta1_method("IsKeyActive"),
+            body=pauthv1beta1.IsKeyActiveRequest(
+                access_key=self.login(),
+            ),
+            response_shape=pauthv1beta1.IsKeyActiveResponse,
+        )
+        compare(actual=resp.active, expected=True)
+
+        # unknown keys should be false (which should also catch inactive keys)
+        resp = util.execute_http(
+            util.pauth_v1beta1_method("IsKeyActive"),
+            body=pauthv1beta1.IsKeyActiveRequest(
+                access_key="im-a-fake-key",
+            ),
+            response_shape=pauthv1beta1.IsKeyActiveResponse,
+        )
+        compare(actual=resp.active, expected=False)

@@ -983,6 +983,94 @@ func (*RevokeUserRoleResponse) Descriptor() ([]byte, []int) {
 	return file_pauth_v1beta1_service_proto_rawDescGZIP(), []int{21}
 }
 
+type IsKeyActiveRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessKey     string                 `protobuf:"bytes,1,opt,name=access_key,json=accessKey,proto3" json:"access_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsKeyActiveRequest) Reset() {
+	*x = IsKeyActiveRequest{}
+	mi := &file_pauth_v1beta1_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsKeyActiveRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsKeyActiveRequest) ProtoMessage() {}
+
+func (x *IsKeyActiveRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pauth_v1beta1_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsKeyActiveRequest.ProtoReflect.Descriptor instead.
+func (*IsKeyActiveRequest) Descriptor() ([]byte, []int) {
+	return file_pauth_v1beta1_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *IsKeyActiveRequest) GetAccessKey() string {
+	if x != nil {
+		return x.AccessKey
+	}
+	return ""
+}
+
+type IsKeyActiveResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Active        bool                   `protobuf:"varint,1,opt,name=active,proto3" json:"active,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsKeyActiveResponse) Reset() {
+	*x = IsKeyActiveResponse{}
+	mi := &file_pauth_v1beta1_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsKeyActiveResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsKeyActiveResponse) ProtoMessage() {}
+
+func (x *IsKeyActiveResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pauth_v1beta1_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsKeyActiveResponse.ProtoReflect.Descriptor instead.
+func (*IsKeyActiveResponse) Descriptor() ([]byte, []int) {
+	return file_pauth_v1beta1_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *IsKeyActiveResponse) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
 var File_pauth_v1beta1_service_proto protoreflect.FileDescriptor
 
 const file_pauth_v1beta1_service_proto_rawDesc = "" +
@@ -1045,7 +1133,12 @@ const file_pauth_v1beta1_service_proto_rawDesc = "" +
 	"\x15RevokeUserRoleRequest\x12\x1f\n" +
 	"\auser_id\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x06userId\x12\x1a\n" +
 	"\x04role\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04role\"\x18\n" +
-	"\x16RevokeUserRoleResponse2\xa5\a\n" +
+	"\x16RevokeUserRoleResponse\";\n" +
+	"\x12IsKeyActiveRequest\x12%\n" +
+	"\n" +
+	"access_key\x18\x01 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\taccessKey\"-\n" +
+	"\x13IsKeyActiveResponse\x12\x16\n" +
+	"\x06active\x18\x01 \x01(\bR\x06active2\xfb\a\n" +
 	"\fPAuthService\x12B\n" +
 	"\x05Purge\x12\x1b.pauth.v1beta1.PurgeRequest\x1a\x1c.pauth.v1beta1.PurgeResponse\x12Q\n" +
 	"\n" +
@@ -1060,7 +1153,8 @@ const file_pauth_v1beta1_service_proto_rawDesc = "" +
 	"\x05Login\x12\x1b.pauth.v1beta1.LoginRequest\x1a\x1c.pauth.v1beta1.LoginResponse\x12Z\n" +
 	"\rListUserRoles\x12#.pauth.v1beta1.ListUserRolesRequest\x1a$.pauth.v1beta1.ListUserRolesResponse\x12Z\n" +
 	"\rGrantUserRole\x12#.pauth.v1beta1.GrantUserRoleRequest\x1a$.pauth.v1beta1.GrantUserRoleResponse\x12]\n" +
-	"\x0eRevokeUserRole\x12$.pauth.v1beta1.RevokeUserRoleRequest\x1a%.pauth.v1beta1.RevokeUserRoleResponseB\xbc\x01\n" +
+	"\x0eRevokeUserRole\x12$.pauth.v1beta1.RevokeUserRoleRequest\x1a%.pauth.v1beta1.RevokeUserRoleResponse\x12T\n" +
+	"\vIsKeyActive\x12!.pauth.v1beta1.IsKeyActiveRequest\x1a\".pauth.v1beta1.IsKeyActiveResponseB\xbc\x01\n" +
 	"\x11com.pauth.v1beta1B\fServiceProtoP\x01ZDgithub.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1;pauthv1beta1\xa2\x02\x03PXX\xaa\x02\rPauth.V1beta1\xca\x02\rPauth\\V1beta1\xe2\x02\x19Pauth\\V1beta1\\GPBMetadata\xea\x02\x0ePauth::V1beta1b\x06proto3"
 
 var (
@@ -1075,7 +1169,7 @@ func file_pauth_v1beta1_service_proto_rawDescGZIP() []byte {
 	return file_pauth_v1beta1_service_proto_rawDescData
 }
 
-var file_pauth_v1beta1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_pauth_v1beta1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_pauth_v1beta1_service_proto_goTypes = []any{
 	(*PurgeRequest)(nil),            // 0: pauth.v1beta1.PurgeRequest
 	(*PurgeResponse)(nil),           // 1: pauth.v1beta1.PurgeResponse
@@ -1099,16 +1193,18 @@ var file_pauth_v1beta1_service_proto_goTypes = []any{
 	(*GrantUserRoleResponse)(nil),   // 19: pauth.v1beta1.GrantUserRoleResponse
 	(*RevokeUserRoleRequest)(nil),   // 20: pauth.v1beta1.RevokeUserRoleRequest
 	(*RevokeUserRoleResponse)(nil),  // 21: pauth.v1beta1.RevokeUserRoleResponse
-	(*User)(nil),                    // 22: pauth.v1beta1.User
-	(*fieldmaskpb.FieldMask)(nil),   // 23: google.protobuf.FieldMask
+	(*IsKeyActiveRequest)(nil),      // 22: pauth.v1beta1.IsKeyActiveRequest
+	(*IsKeyActiveResponse)(nil),     // 23: pauth.v1beta1.IsKeyActiveResponse
+	(*User)(nil),                    // 24: pauth.v1beta1.User
+	(*fieldmaskpb.FieldMask)(nil),   // 25: google.protobuf.FieldMask
 }
 var file_pauth_v1beta1_service_proto_depIdxs = []int32{
-	22, // 0: pauth.v1beta1.CreateUserRequest.user:type_name -> pauth.v1beta1.User
-	22, // 1: pauth.v1beta1.CreateUserResponse.user:type_name -> pauth.v1beta1.User
-	22, // 2: pauth.v1beta1.ListUsersResponse.users:type_name -> pauth.v1beta1.User
-	22, // 3: pauth.v1beta1.ReadUserResponse.user:type_name -> pauth.v1beta1.User
-	22, // 4: pauth.v1beta1.UpdateUserRequest.user:type_name -> pauth.v1beta1.User
-	23, // 5: pauth.v1beta1.UpdateUserRequest.field_mask:type_name -> google.protobuf.FieldMask
+	24, // 0: pauth.v1beta1.CreateUserRequest.user:type_name -> pauth.v1beta1.User
+	24, // 1: pauth.v1beta1.CreateUserResponse.user:type_name -> pauth.v1beta1.User
+	24, // 2: pauth.v1beta1.ListUsersResponse.users:type_name -> pauth.v1beta1.User
+	24, // 3: pauth.v1beta1.ReadUserResponse.user:type_name -> pauth.v1beta1.User
+	24, // 4: pauth.v1beta1.UpdateUserRequest.user:type_name -> pauth.v1beta1.User
+	25, // 5: pauth.v1beta1.UpdateUserRequest.field_mask:type_name -> google.protobuf.FieldMask
 	0,  // 6: pauth.v1beta1.PAuthService.Purge:input_type -> pauth.v1beta1.PurgeRequest
 	2,  // 7: pauth.v1beta1.PAuthService.CreateUser:input_type -> pauth.v1beta1.CreateUserRequest
 	6,  // 8: pauth.v1beta1.PAuthService.ReadUser:input_type -> pauth.v1beta1.ReadUserReqeust
@@ -1120,19 +1216,21 @@ var file_pauth_v1beta1_service_proto_depIdxs = []int32{
 	16, // 14: pauth.v1beta1.PAuthService.ListUserRoles:input_type -> pauth.v1beta1.ListUserRolesRequest
 	18, // 15: pauth.v1beta1.PAuthService.GrantUserRole:input_type -> pauth.v1beta1.GrantUserRoleRequest
 	20, // 16: pauth.v1beta1.PAuthService.RevokeUserRole:input_type -> pauth.v1beta1.RevokeUserRoleRequest
-	1,  // 17: pauth.v1beta1.PAuthService.Purge:output_type -> pauth.v1beta1.PurgeResponse
-	3,  // 18: pauth.v1beta1.PAuthService.CreateUser:output_type -> pauth.v1beta1.CreateUserResponse
-	7,  // 19: pauth.v1beta1.PAuthService.ReadUser:output_type -> pauth.v1beta1.ReadUserResponse
-	5,  // 20: pauth.v1beta1.PAuthService.ListUsers:output_type -> pauth.v1beta1.ListUsersResponse
-	9,  // 21: pauth.v1beta1.PAuthService.SetUserPassword:output_type -> pauth.v1beta1.SetUserPasswordResponse
-	11, // 22: pauth.v1beta1.PAuthService.UpdateUser:output_type -> pauth.v1beta1.UpdateUserResponse
-	13, // 23: pauth.v1beta1.PAuthService.DeleteUser:output_type -> pauth.v1beta1.DeleteUserResponse
-	15, // 24: pauth.v1beta1.PAuthService.Login:output_type -> pauth.v1beta1.LoginResponse
-	17, // 25: pauth.v1beta1.PAuthService.ListUserRoles:output_type -> pauth.v1beta1.ListUserRolesResponse
-	19, // 26: pauth.v1beta1.PAuthService.GrantUserRole:output_type -> pauth.v1beta1.GrantUserRoleResponse
-	21, // 27: pauth.v1beta1.PAuthService.RevokeUserRole:output_type -> pauth.v1beta1.RevokeUserRoleResponse
-	17, // [17:28] is the sub-list for method output_type
-	6,  // [6:17] is the sub-list for method input_type
+	22, // 17: pauth.v1beta1.PAuthService.IsKeyActive:input_type -> pauth.v1beta1.IsKeyActiveRequest
+	1,  // 18: pauth.v1beta1.PAuthService.Purge:output_type -> pauth.v1beta1.PurgeResponse
+	3,  // 19: pauth.v1beta1.PAuthService.CreateUser:output_type -> pauth.v1beta1.CreateUserResponse
+	7,  // 20: pauth.v1beta1.PAuthService.ReadUser:output_type -> pauth.v1beta1.ReadUserResponse
+	5,  // 21: pauth.v1beta1.PAuthService.ListUsers:output_type -> pauth.v1beta1.ListUsersResponse
+	9,  // 22: pauth.v1beta1.PAuthService.SetUserPassword:output_type -> pauth.v1beta1.SetUserPasswordResponse
+	11, // 23: pauth.v1beta1.PAuthService.UpdateUser:output_type -> pauth.v1beta1.UpdateUserResponse
+	13, // 24: pauth.v1beta1.PAuthService.DeleteUser:output_type -> pauth.v1beta1.DeleteUserResponse
+	15, // 25: pauth.v1beta1.PAuthService.Login:output_type -> pauth.v1beta1.LoginResponse
+	17, // 26: pauth.v1beta1.PAuthService.ListUserRoles:output_type -> pauth.v1beta1.ListUserRolesResponse
+	19, // 27: pauth.v1beta1.PAuthService.GrantUserRole:output_type -> pauth.v1beta1.GrantUserRoleResponse
+	21, // 28: pauth.v1beta1.PAuthService.RevokeUserRole:output_type -> pauth.v1beta1.RevokeUserRoleResponse
+	23, // 29: pauth.v1beta1.PAuthService.IsKeyActive:output_type -> pauth.v1beta1.IsKeyActiveResponse
+	18, // [18:30] is the sub-list for method output_type
+	6,  // [6:18] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -1155,7 +1253,7 @@ func file_pauth_v1beta1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pauth_v1beta1_service_proto_rawDesc), len(file_pauth_v1beta1_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

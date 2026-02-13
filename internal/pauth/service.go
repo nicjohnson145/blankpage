@@ -449,3 +449,22 @@ func (s *Service) RevokeUserRole(ctx context.Context, req *connect.Request[pbv1b
 
 	return connect.NewResponse(&pbv1beta1.RevokeUserRoleResponse{}), nil
 }
+
+func (s *Service) IsKeyActive(ctx context.Context, req *connect.Request[pbv1beta1.IsKeyActiveRequest]) (*connect.Response[pbv1beta1.IsKeyActiveResponse], error) {
+	// Implement as a closure to avoid leaking information since this endpoint is public
+	inner := func() bool {
+		_, err := s.store.GetActiveSession(ctx, req.Msg.AccessKey)
+		if err != nil {
+			if errors.Is(err, storage.ErrSessionUnknownOrInactiveError) {
+				return false
+			}
+			s.logError(ctx, err, "error checking session validity")
+			return false
+		}
+		return true
+	}
+
+	return connect.NewResponse(&pbv1beta1.IsKeyActiveResponse{
+		Active: inner(),
+	}), nil
+}

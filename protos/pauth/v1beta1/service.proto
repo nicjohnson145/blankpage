@@ -93,6 +93,14 @@ message RevokeUserRoleRequest {
 
 message RevokeUserRoleResponse {}
 
+message IsKeyActiveRequest {
+  string access_key = 1 [(buf.validate.field).required = true];
+}
+
+message IsKeyActiveResponse {
+  bool active = 1;
+}
+
 service PAuthService {
   // Purge purges all user information. Intended for functional tests, endpoint must be explicitly enabled
   rpc Purge(PurgeRequest) returns (PurgeResponse);
@@ -116,4 +124,6 @@ service PAuthService {
   rpc GrantUserRole(GrantUserRoleRequest) returns (GrantUserRoleResponse);
   // RevokeUserRole revokes the specified role from the specified user
   rpc RevokeUserRole(RevokeUserRoleRequest) returns (RevokeUserRoleResponse);
+  // IsKeyActive checks if the given key is a valid access key
+  rpc IsKeyActive(IsKeyActiveRequest) returns (IsKeyActiveResponse);
 }

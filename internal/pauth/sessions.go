@@ -23,7 +23,12 @@ var (
 type sessionCtxKeyType struct{}
 
 var (
-	sessionCtxKey sessionCtxKeyType
+	sessionCtxKey        sessionCtxKeyType
+	pauthPublicEndpoints = set.New(
+		pbv1beta1connect.PAuthServiceLoginProcedure,
+		pbv1beta1connect.PAuthServicePurgeProcedure,
+		pbv1beta1connect.PAuthServiceIsKeyActiveProcedure,
+	)
 )
 
 type SessionStore interface {
@@ -36,7 +41,7 @@ type AuthBypassFunc func(route string) bool
 
 func intercept(ctx context.Context, bypassFunc AuthBypassFunc, store SessionStore, method string, headers http.Header) (context.Context, error) {
 	// If we're told to ignore this route, then let the request go unchanged
-	if bypassFunc(method) || method == pbv1beta1connect.PAuthServiceLoginProcedure || method == pbv1beta1connect.PAuthServicePurgeProcedure {
+	if bypassFunc(method) || pauthPublicEndpoints.Contains(method) {
 		return ctx, nil
 	}
 

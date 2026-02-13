@@ -10,6 +10,8 @@ __all__ = (
     "DeleteUserResponse",
     "GrantUserRoleRequest",
     "GrantUserRoleResponse",
+    "IsKeyActiveRequest",
+    "IsKeyActiveResponse",
     "ListUserRolesRequest",
     "ListUserRolesResponse",
     "ListUsersRequest",
@@ -91,6 +93,22 @@ class GrantUserRoleResponse(betterproto2.Message):
 
 
 default_message_pool.register_message("pauth.v1beta1", "GrantUserRoleResponse", GrantUserRoleResponse)
+
+
+@dataclass(eq=False, repr=False)
+class IsKeyActiveRequest(betterproto2.Message):
+    access_key: "str" = betterproto2.field(1, betterproto2.TYPE_STRING)
+
+
+default_message_pool.register_message("pauth.v1beta1", "IsKeyActiveRequest", IsKeyActiveRequest)
+
+
+@dataclass(eq=False, repr=False)
+class IsKeyActiveResponse(betterproto2.Message):
+    active: "bool" = betterproto2.field(1, betterproto2.TYPE_BOOL)
+
+
+default_message_pool.register_message("pauth.v1beta1", "IsKeyActiveResponse", IsKeyActiveResponse)
 
 
 @dataclass(eq=False, repr=False)
@@ -388,6 +406,17 @@ class PAuthServiceStub:
             "/pauth.v1beta1.PAuthService/RevokeUserRole",
             RevokeUserRoleRequest.SerializeToString,
             RevokeUserRoleResponse.FromString,
+        )(message)
+
+    def is_key_active(self, message: "IsKeyActiveRequest") -> "IsKeyActiveResponse":
+        """
+        IsKeyActive checks if the given key is a valid access key
+        """
+
+        return self._channel.unary_unary(
+            "/pauth.v1beta1.PAuthService/IsKeyActive",
+            IsKeyActiveRequest.SerializeToString,
+            IsKeyActiveResponse.FromString,
         )(message)
 
 

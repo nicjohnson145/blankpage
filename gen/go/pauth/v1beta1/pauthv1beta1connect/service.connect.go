@@ -59,6 +59,9 @@ const (
 	// PAuthServiceRevokeUserRoleProcedure is the fully-qualified name of the PAuthService's
 	// RevokeUserRole RPC.
 	PAuthServiceRevokeUserRoleProcedure = "/pauth.v1beta1.PAuthService/RevokeUserRole"
+	// PAuthServiceIsKeyActiveProcedure is the fully-qualified name of the PAuthService's IsKeyActive
+	// RPC.
+	PAuthServiceIsKeyActiveProcedure = "/pauth.v1beta1.PAuthService/IsKeyActive"
 )
 
 // PAuthServiceClient is a client for the pauth.v1beta1.PAuthService service.
@@ -85,6 +88,8 @@ type PAuthServiceClient interface {
 	GrantUserRole(context.Context, *connect.Request[v1beta1.GrantUserRoleRequest]) (*connect.Response[v1beta1.GrantUserRoleResponse], error)
 	// RevokeUserRole revokes the specified role from the specified user
 	RevokeUserRole(context.Context, *connect.Request[v1beta1.RevokeUserRoleRequest]) (*connect.Response[v1beta1.RevokeUserRoleResponse], error)
+	// IsKeyActive checks if the given key is a valid access key
+	IsKeyActive(context.Context, *connect.Request[v1beta1.IsKeyActiveRequest]) (*connect.Response[v1beta1.IsKeyActiveResponse], error)
 }
 
 // NewPAuthServiceClient constructs a client for the pauth.v1beta1.PAuthService service. By default,
@@ -164,6 +169,12 @@ func NewPAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(pAuthServiceMethods.ByName("RevokeUserRole")),
 			connect.WithClientOptions(opts...),
 		),
+		isKeyActive: connect.NewClient[v1beta1.IsKeyActiveRequest, v1beta1.IsKeyActiveResponse](
+			httpClient,
+			baseURL+PAuthServiceIsKeyActiveProcedure,
+			connect.WithSchema(pAuthServiceMethods.ByName("IsKeyActive")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -180,6 +191,7 @@ type pAuthServiceClient struct {
 	listUserRoles   *connect.Client[v1beta1.ListUserRolesRequest, v1beta1.ListUserRolesResponse]
 	grantUserRole   *connect.Client[v1beta1.GrantUserRoleRequest, v1beta1.GrantUserRoleResponse]
 	revokeUserRole  *connect.Client[v1beta1.RevokeUserRoleRequest, v1beta1.RevokeUserRoleResponse]
+	isKeyActive     *connect.Client[v1beta1.IsKeyActiveRequest, v1beta1.IsKeyActiveResponse]
 }
 
 // Purge calls pauth.v1beta1.PAuthService.Purge.
@@ -237,6 +249,11 @@ func (c *pAuthServiceClient) RevokeUserRole(ctx context.Context, req *connect.Re
 	return c.revokeUserRole.CallUnary(ctx, req)
 }
 
+// IsKeyActive calls pauth.v1beta1.PAuthService.IsKeyActive.
+func (c *pAuthServiceClient) IsKeyActive(ctx context.Context, req *connect.Request[v1beta1.IsKeyActiveRequest]) (*connect.Response[v1beta1.IsKeyActiveResponse], error) {
+	return c.isKeyActive.CallUnary(ctx, req)
+}
+
 // PAuthServiceHandler is an implementation of the pauth.v1beta1.PAuthService service.
 type PAuthServiceHandler interface {
 	// Purge purges all user information. Intended for functional tests, endpoint must be explicitly enabled
@@ -261,6 +278,8 @@ type PAuthServiceHandler interface {
 	GrantUserRole(context.Context, *connect.Request[v1beta1.GrantUserRoleRequest]) (*connect.Response[v1beta1.GrantUserRoleResponse], error)
 	// RevokeUserRole revokes the specified role from the specified user
 	RevokeUserRole(context.Context, *connect.Request[v1beta1.RevokeUserRoleRequest]) (*connect.Response[v1beta1.RevokeUserRoleResponse], error)
+	// IsKeyActive checks if the given key is a valid access key
+	IsKeyActive(context.Context, *connect.Request[v1beta1.IsKeyActiveRequest]) (*connect.Response[v1beta1.IsKeyActiveResponse], error)
 }
 
 // NewPAuthServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -336,6 +355,12 @@ func NewPAuthServiceHandler(svc PAuthServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(pAuthServiceMethods.ByName("RevokeUserRole")),
 		connect.WithHandlerOptions(opts...),
 	)
+	pAuthServiceIsKeyActiveHandler := connect.NewUnaryHandler(
+		PAuthServiceIsKeyActiveProcedure,
+		svc.IsKeyActive,
+		connect.WithSchema(pAuthServiceMethods.ByName("IsKeyActive")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pauth.v1beta1.PAuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PAuthServicePurgeProcedure:
@@ -360,6 +385,8 @@ func NewPAuthServiceHandler(svc PAuthServiceHandler, opts ...connect.HandlerOpti
 			pAuthServiceGrantUserRoleHandler.ServeHTTP(w, r)
 		case PAuthServiceRevokeUserRoleProcedure:
 			pAuthServiceRevokeUserRoleHandler.ServeHTTP(w, r)
+		case PAuthServiceIsKeyActiveProcedure:
+			pAuthServiceIsKeyActiveHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -411,4 +438,8 @@ func (UnimplementedPAuthServiceHandler) GrantUserRole(context.Context, *connect.
 
 func (UnimplementedPAuthServiceHandler) RevokeUserRole(context.Context, *connect.Request[v1beta1.RevokeUserRoleRequest]) (*connect.Response[v1beta1.RevokeUserRoleResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pauth.v1beta1.PAuthService.RevokeUserRole is not implemented"))
+}
+
+func (UnimplementedPAuthServiceHandler) IsKeyActive(context.Context, *connect.Request[v1beta1.IsKeyActiveRequest]) (*connect.Response[v1beta1.IsKeyActiveResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pauth.v1beta1.PAuthService.IsKeyActive is not implemented"))
 }
