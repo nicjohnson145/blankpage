@@ -16,6 +16,7 @@ builds:
     - 7
     main: ./cmd/cli
     binary: blankpage
+    id: cli
   - env:
       - CGO_ENABLED=0
     goos:
@@ -28,6 +29,7 @@ builds:
     - 7
     main: ./cmd/server
     binary: blankpage_server
+    id: server
 archives:
   - formats:
     - binary
