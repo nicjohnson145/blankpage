@@ -152,3 +152,7 @@ tasks:
     cmds:
     - bun run build
 
+  sync-ignores:
+    desc: sync dockerignore with gitignore
+    cmds:
+    - uv run --with generate-dockerignore-from-gitignore==0.1.3 generate-dockerignore

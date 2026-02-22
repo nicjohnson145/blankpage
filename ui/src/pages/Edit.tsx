@@ -11,7 +11,7 @@ import {useForm} from "react-hook-form";
 import {useParams} from "react-router";
 import {blankPageClient} from "../api/client";
 import {LOCAL_STORAGE_ACCESS_KEY_KEY} from '../constants';
-import {ReadBookRequestSchema, AddBookRequestSchema, UpdateBookRequestSchema} from "../gen/blankpage/v1/service_pb";
+import {ReadBookRequestSchema, UpdateBookRequestSchema} from "../gen/blankpage/v1/service_pb";
 import {FieldMaskSchema} from '@bufbuild/protobuf/wkt';
 import {useSnackbar} from 'notistack';
 import { useNavigate } from "react-router";
@@ -71,7 +71,7 @@ function Edit() {
         }
     }
 
-    const handleAdd = async (data: FormData) => {
+    const handleAdd = async (_: FormData) => {
         enqueueSnackbar(`Add not implemented yet`, {variant: 'error', autoHideDuration: 4000})
     }
 
