@@ -1,5 +1,5 @@
 from functionaltests import util
-from blankpage.pauth import v1beta1 as pauthv1beta1
+from pauth.pauth import v1beta1 as pauthv1beta1
 from betterproto2 import unwrap
 from testfixtures import compare
 from typing import Any
@@ -7,6 +7,8 @@ from typing import Any
 
 class TestPauth(util.Base):
     GRANT_ADMIN_ALL = False
+
+    ADMIN_DEFAULT_ROLES = sorted(["admin", "book-uploader", "book-updater", "shelf-admin", "view-only"])
 
     def strip_ids(self, response) -> Any:
         if isinstance(response, pauthv1beta1.ListUsersResponse):
@@ -18,6 +20,20 @@ class TestPauth(util.Base):
             return response
 
         raise ValueError("unhandled type in strip_ids")
+
+    def sort_roles(self, response) -> Any:
+        if isinstance(response, pauthv1beta1.ListUsersResponse):
+            for idx, _ in enumerate(response.users):
+                response.users[idx].roles = sorted(response.users[idx].roles)
+            return response
+        elif isinstance(response, pauthv1beta1.ReadUserResponse):
+            unwrap(response.user).roles = sorted(unwrap(response.user).roles)
+            return response
+        elif isinstance(response, pauthv1beta1.ListUserRolesResponse):
+            response.roles = sorted(response.roles)
+            return response
+
+        raise ValueError("unhandled type in sort_roles")
 
     def test_login(self):
         resp = util.execute_http(
@@ -98,22 +114,21 @@ class TestPauth(util.Base):
         )
 
         # list them out
-        resp = util.execute_http(
-            util.pauth_v1beta1_method("ListUsers"),
-            key=admin_key,
-            body=pauthv1beta1.ListUsersRequest(),
-            response_shape=pauthv1beta1.ListUsersResponse,
+        resp = self.strip_ids(
+            self.sort_roles(
+                util.execute_http(
+                    util.pauth_v1beta1_method("ListUsers"),
+                    key=admin_key,
+                    body=pauthv1beta1.ListUsersRequest(),
+                    response_shape=pauthv1beta1.ListUsersResponse,
+                )
+            )
         )
-        # strip the IDs out for simplicity
-        actual_users = []
-        for u in resp.users:
-            u.id = ""
-            actual_users.append(u)
 
         compare(
-            actual=actual_users,
+            actual=resp.users,
             expected=[
-                pauthv1beta1.User(email="admin@example.com", roles=["admin"]),
+                pauthv1beta1.User(email="admin@example.com", roles=self.ADMIN_DEFAULT_ROLES),
                 pauthv1beta1.User(email="guy@example.com"),
                 pauthv1beta1.User(email="gal@example.com"),
             ],
@@ -225,18 +240,20 @@ class TestPauth(util.Base):
 
         # list them out
         resp = self.strip_ids(
-            util.execute_http(
-                util.pauth_v1beta1_method("ListUsers"),
-                key=admin_key,
-                body=pauthv1beta1.ListUsersRequest(),
-                response_shape=pauthv1beta1.ListUsersResponse,
+            self.sort_roles(
+                util.execute_http(
+                    util.pauth_v1beta1_method("ListUsers"),
+                    key=admin_key,
+                    body=pauthv1beta1.ListUsersRequest(),
+                    response_shape=pauthv1beta1.ListUsersResponse,
+                )
             )
         )
 
         compare(
             actual=resp.users,
             expected=[
-                pauthv1beta1.User(email="admin@example.com", roles=["admin"]),
+                pauthv1beta1.User(email="admin@example.com", roles=self.ADMIN_DEFAULT_ROLES),
                 pauthv1beta1.User(email="gal@example.com"),
             ],
         )
@@ -286,18 +303,20 @@ class TestPauth(util.Base):
 
         # list the users
         resp = self.strip_ids(
-            util.execute_http(
-                util.pauth_v1beta1_method("ListUsers"),
-                key=admin_key,
-                body=pauthv1beta1.ListUsersRequest(),
-                response_shape=pauthv1beta1.ListUsersResponse,
+            self.sort_roles(
+                util.execute_http(
+                    util.pauth_v1beta1_method("ListUsers"),
+                    key=admin_key,
+                    body=pauthv1beta1.ListUsersRequest(),
+                    response_shape=pauthv1beta1.ListUsersResponse,
+                )
             )
         )
 
         compare(
             actual=resp.users,
             expected=[
-                pauthv1beta1.User(email="admin@example.com", roles=["admin"]),
+                pauthv1beta1.User(email="admin@example.com", roles=self.ADMIN_DEFAULT_ROLES),
                 pauthv1beta1.User(email="guy@example.com", roles=["some-role"]),
             ],
         )
@@ -356,18 +375,20 @@ class TestPauth(util.Base):
 
         # list the users
         resp = self.strip_ids(
-            util.execute_http(
-                util.pauth_v1beta1_method("ListUsers"),
-                key=admin_key,
-                body=pauthv1beta1.ListUsersRequest(),
-                response_shape=pauthv1beta1.ListUsersResponse,
+            self.sort_roles(
+                util.execute_http(
+                    util.pauth_v1beta1_method("ListUsers"),
+                    key=admin_key,
+                    body=pauthv1beta1.ListUsersRequest(),
+                    response_shape=pauthv1beta1.ListUsersResponse,
+                )
             )
         )
 
         compare(
             actual=resp.users,
             expected=[
-                pauthv1beta1.User(email="admin@example.com", roles=["admin"]),
+                pauthv1beta1.User(email="admin@example.com", roles=self.ADMIN_DEFAULT_ROLES),
                 pauthv1beta1.User(email="guy@example.com"),
             ],
         )
@@ -411,13 +432,15 @@ class TestPauth(util.Base):
         admin_key = self.login()
 
         # list their roles
-        role_resp = util.execute_http(
-            util.pauth_v1beta1_method("ListUserRoles"),
-            key=admin_key,
-            body=pauthv1beta1.ListUserRolesRequest(),
-            response_shape=pauthv1beta1.ListUserRolesResponse,
+        role_resp = self.sort_roles(
+            util.execute_http(
+                util.pauth_v1beta1_method("ListUserRoles"),
+                key=admin_key,
+                body=pauthv1beta1.ListUserRolesRequest(),
+                response_shape=pauthv1beta1.ListUserRolesResponse,
+            )
         )
-        compare(actual=role_resp.roles, expected=["admin"])
+        compare(actual=role_resp.roles, expected=self.ADMIN_DEFAULT_ROLES)
 
     def test_is_active_key(self):
         # active keys should return true

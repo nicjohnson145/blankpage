@@ -1,7 +1,7 @@
 import {create} from '@bufbuild/protobuf';
 import {redirect} from "react-router";
 import {pauthClient} from "../api/client";
-import {IsKeyActiveRequestSchema} from '../gen/pauth/v1beta1/service_pb';
+import {IsKeyActiveRequestSchema} from 'pauth/gen/ecma/pauth/v1beta1/service_pb.js';
 import {ConnectError} from "@connectrpc/connect";
 import { LOCAL_STORAGE_ACCESS_KEY_KEY } from '../constants';
 import { createContext } from 'react-router';

@@ -12,7 +12,7 @@ import (
 	pbv1 "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1"
 	pbv1connect "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1/blankpagev1connect"
 	"github.com/nicjohnson145/blankpage/internal/logging"
-	"github.com/nicjohnson145/blankpage/internal/pauth"
+	"github.com/nicjohnson145/pauth"
 	"github.com/nicjohnson145/blankpage/internal/storage"
 	"github.com/nicjohnson145/hlp"
 	"github.com/oklog/ulid/v2"

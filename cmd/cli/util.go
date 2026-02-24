@@ -8,8 +8,8 @@ import (
 
 	"connectrpc.com/connect"
 	blankpagev1connect "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1/blankpagev1connect"
-	pauthv1beta1 "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1"
-	pauthv1beta1connect "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1/pauthv1beta1connect"
+	pauthv1beta1 "github.com/nicjohnson145/pauth/gen/go/pauth/v1beta1"
+	pauthv1beta1connect "github.com/nicjohnson145/pauth/gen/go/pauth/v1beta1/pauthv1beta1connect"
 	"github.com/nicjohnson145/blankpage/internal/cliconfig"
 	"github.com/nicjohnson145/blankpage/internal/logging"
 	"github.com/nicjohnson145/hlp"

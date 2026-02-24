@@ -15,6 +15,7 @@
         "@mui/material": "^7.3.8",
         "@mui/styled-engine-sc": "^7.3.8",
         "@tanstack/react-query": "^5.90.21",
+        "pauth": "https://github.com/nicjohnson145/pauth#v0.3.0",
         "notistack": "^3.0.2",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
@@ -498,6 +499,8 @@
     "path-parse": ["path-parse@1.0.7", "", {}, "sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw=="],
 
     "path-type": ["path-type@4.0.0", "", {}, "sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw=="],
+
+    "pauth": ["pauth@github:nicjohnson145/pauth#a40b79c", { "dependencies": { "@bufbuild/protobuf": "^2.11.0" } }, "nicjohnson145-pauth-a40b79c"],
 
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 

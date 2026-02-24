@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import requests
 from blankpage.blankpage import v1 as blankpagev1
-from blankpage.pauth import v1beta1 as pauthv1beta1
+from pauth.pauth import v1beta1 as pauthv1beta1
 from testfixtures import compare
 from betterproto2 import unwrap
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"errors"
+	"fmt"
 	"io/fs"
 	"net"
 	"net/http"
@@ -17,16 +18,17 @@ import (
 	"github.com/go-logr/zerologr"
 	"github.com/justinas/alice"
 	pbv1connect "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1/blankpagev1connect"
-	pauthv1beta1connect "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1/pauthv1beta1connect"
 	"github.com/nicjohnson145/blankpage/internal/logging"
-	"github.com/nicjohnson145/blankpage/internal/pauth"
-	pstorage "github.com/nicjohnson145/blankpage/internal/pauth/storage"
 	"github.com/nicjohnson145/blankpage/internal/service"
 	"github.com/nicjohnson145/blankpage/internal/storage"
 	"github.com/nicjohnson145/blankpage/internal/svcconfig"
 	"github.com/nicjohnson145/connecthelp/codec"
 	intercepters "github.com/nicjohnson145/connecthelp/interceptors/server"
+	"github.com/nicjohnson145/hlp"
 	"github.com/nicjohnson145/hlp/set"
+	"github.com/nicjohnson145/pauth"
+	pauthv1beta1connect "github.com/nicjohnson145/pauth/gen/go/pauth/v1beta1/pauthv1beta1connect"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -68,7 +70,7 @@ func run() error {
 		return err
 	}
 
-	pstore, pstoreCleanup, err := pstorage.NewFromEnv(logger)
+	pstore, pstoreCleanup, err := newPauthStorage(logger)
 	defer pstoreCleanup()
 	if err != nil {
 		logger.Err(err).Msg("error creating pauth storage")
@@ -219,4 +221,31 @@ func run() error {
 	}
 
 	return nil
+}
+
+func newPauthStorage(logger zerolog.Logger) (pauth.Storer, func(), error) {
+	kind, err := svcconfig.ParseStorageKind(viper.GetString(svcconfig.StorageType))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch kind {
+	case svcconfig.StorageKindMemory:
+		return pauth.NewMemoryStore(pauth.MemoryStoreOpts{})
+	case svcconfig.StorageKindPostgres:
+		return pauth.NewPostgresStore(pauth.PostgresStoreOpts{
+			Logger: hlp.Ptr(zerologr.New(&logger)),
+			ConnectionOpts: &pauth.PostgresStoreConnectionOpts{
+				User:     viper.GetString(svcconfig.PostgresDatabaseUser),
+				Password: viper.GetString(svcconfig.PostgresDatabasePassword),
+				Host:     viper.GetString(svcconfig.PostgresDatabaseHost),
+				Port:     viper.GetInt(svcconfig.PostgresDatabasePort),
+				DBName:   viper.GetString(svcconfig.PostgresDatabaseName),
+				SSLMode:  viper.GetString(svcconfig.PostgresDatabaseSSL),
+			},
+		})
+	default:
+		return nil, func() {}, fmt.Errorf("unhandled storage kind %v", kind)
+	}
+
 }

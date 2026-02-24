@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	blankpagev1 "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1"
 	blankpagev1connect "github.com/nicjohnson145/blankpage/gen/go/blankpage/v1/blankpagev1connect"
-	pauthv1beta1 "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1"
-	pauthv1beta1connect "github.com/nicjohnson145/blankpage/gen/go/pauth/v1beta1/pauthv1beta1connect"
+	pauthv1beta1 "github.com/nicjohnson145/pauth/gen/go/pauth/v1beta1"
+	pauthv1beta1connect "github.com/nicjohnson145/pauth/gen/go/pauth/v1beta1/pauthv1beta1connect"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )

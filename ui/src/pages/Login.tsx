@@ -10,7 +10,7 @@ import MuiCard from '@mui/material/Card';
 import {styled} from '@mui/material/styles';
 import {pauthClient} from '../api/client';
 import {create} from '@bufbuild/protobuf';
-import {LoginRequestSchema} from '../gen/pauth/v1beta1/service_pb';
+import {LoginRequestSchema} from 'pauth/gen/ecma/pauth/v1beta1/service_pb.js';
 import {useSnackbar} from 'notistack';
 import {ConnectError} from "@connectrpc/connect";
 import { useNavigate } from "react-router";
