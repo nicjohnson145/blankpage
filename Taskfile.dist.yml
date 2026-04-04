@@ -18,6 +18,20 @@ tasks:
 
   server:
     desc: run server locally
+    cmds:
+    - mkdir -p ./cmd/server/dist
+    - echo "<p>This is a debug server build</p>" > ./cmd/server/dist/index.html
+    - CGO_ENABLED=0 go build -o server ./cmd/server 
+    - task: _run
+
+  server-production:
+    desc: run a production server locally
+    cmds:
+    - task: build-production-server
+    - task: _run
+
+  _run:
+    internal: true
     env:
       LOG_LEVEL: debug
       LOG_FORMAT: human
@@ -29,9 +43,6 @@ tasks:
       POSTGRES_DATABASE_HOST: localhost
       POSTGRES_DATABASE_NAME: blankpage
     cmds:
-    - mkdir -p ./cmd/server/dist
-    - echo "<p>This is a debug server build</p>" > ./cmd/server/dist/index.html
-    - CGO_ENABLED=0 go build -o server ./cmd/server 
     - ./server
 
   cli:
@@ -137,16 +148,16 @@ tasks:
     status:
     - test -f seed-books/{{ .BOOK }}
 
-  production-server:
+  build-production-server:
     desc: build a production server binary with the UI bundled in
     cmds:
-    - task: production-ui
+    - task: build-production-ui
     - rm -rf ./cmd/server/dist
     - mkdir -p ./cmd/server/dist
     - cp -r ./ui/dist/* ./cmd/server/dist/.
     - CGO_ENABLED=0 go build -o server ./cmd/server 
 
-  production-ui:
+  build-production-ui:
     internal: true
     dir: ./ui
     cmds:
