@@ -62,6 +62,11 @@ func Root() *cobra.Command {
 		"",
 		"Url of blankpage service",
 	)
+	cmd.PersistentFlags().Bool(
+		cliconfig.NoConfig,
+		cliconfig.DefaultNoConfig,
+		"Do not read on-disk config files",
+	)
 
 	cmd.AddCommand(
 		Purge(),

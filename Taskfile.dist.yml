@@ -91,7 +91,7 @@ tasks:
   purge:
     desc: purge a local service
     cmds:
-    - ./blankpage --server-url {{ .SERVICE_URL }} purge
+    - ./blankpage --no-config --server-url {{ .SERVICE_URL }} purge
 
   sample-books:
     desc: download some sample books from project gutenberg & seed them into the service
@@ -138,7 +138,7 @@ tasks:
     - task: fetch-book
       vars:
         BOOK: '{{ .BOOK }}'
-    - ./blankpage add-book --server-url {{ .SERVICE_URL }} --title "{{ .TITLE }}" --author "{{ .AUTHOR }}" --no-interactive seed-books/{{ .BOOK }}
+    - ./blankpage --no-config add-book --server-url {{ .SERVICE_URL }} --title "{{ .TITLE }}" --author "{{ .AUTHOR }}" --no-interactive seed-books/{{ .BOOK }}
 
 
   fetch-book:

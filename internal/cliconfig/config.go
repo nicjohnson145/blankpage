@@ -18,28 +18,36 @@ const (
 	AuthenticationEmail     = "authentication.email"
 	AuthenticationPassword  = "authentication.password"
 	AuthenticationAccessKey = "authentication.access-key"
+	NoConfig                = "no-config"
 )
 
 var (
 	DefaultFlagNoInteractive = false
 	DefaultFlagLogLevel      = logging.LogLevelInfo.String()
+	DefaultNoConfig          = false
 )
 
 func InitConfig(cmd *cobra.Command) error {
-
-	viper.SetConfigName("cli")
-	configDir, err := os.UserConfigDir()
+	noConfig, err := cmd.Flags().GetBool(NoConfig)
 	if err != nil {
-		return fmt.Errorf("error getting user config dir: %w", err)
+		return fmt.Errorf("error checking no-config flag: %w", err)
 	}
-	viper.AddConfigPath(filepath.Join(configDir, "blankpage"))
-	viper.SetConfigType("yaml")
 
-	// Read in disk level config
-	if err := viper.ReadInConfig(); err != nil {
-		// If its not there then just eat it
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return fmt.Errorf("error reading config file: %s", err)
+	// Unless we're told not to, read in disk level config
+	if !noConfig {
+		viper.SetConfigName("cli")
+		configDir, err := os.UserConfigDir()
+		if err != nil {
+			return fmt.Errorf("error getting user config dir: %w", err)
+		}
+		viper.AddConfigPath(filepath.Join(configDir, "blankpage"))
+		viper.SetConfigType("yaml")
+
+		if err := viper.ReadInConfig(); err != nil {
+			// If its not there then just eat it
+			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+				return fmt.Errorf("error reading config file: %s", err)
+			}
 		}
 	}
 
