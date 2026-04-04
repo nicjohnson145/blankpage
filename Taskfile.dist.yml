@@ -152,16 +152,19 @@ tasks:
     desc: build a production server binary with the UI bundled in
     cmds:
     - task: build-production-ui
-    - rm -rf ./cmd/server/dist
-    - mkdir -p ./cmd/server/dist
-    - cp -r ./ui/dist/* ./cmd/server/dist/.
+    - task: copy-production-ui
     - CGO_ENABLED=0 go build -o server ./cmd/server 
 
   build-production-ui:
-    internal: true
     dir: ./ui
     cmds:
     - bun run build
+
+  copy-production-ui:
+    cmds:
+    - rm -rf ./cmd/server/dist
+    - mkdir -p ./cmd/server/dist
+    - cp -r ./ui/dist/* ./cmd/server/dist/.
 
   sync-ignores:
     desc: sync dockerignore with gitignore
