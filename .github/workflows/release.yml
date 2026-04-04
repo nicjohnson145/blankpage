@@ -32,8 +32,13 @@ jobs:
         with:
           version: 3.46.3
 
-      - name: Build UI
-        run: task build-production-ui
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: ./ui
+
+      - name: Build React App
+        run: bun run build
+        working-directory: ./ui
 
       - name: Copy UI
         run: task copy-production-ui
